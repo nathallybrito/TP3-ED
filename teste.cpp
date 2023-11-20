@@ -24,29 +24,29 @@ private:
         return result;
     }
 
-    void propagate(int node, int start, int end) {
-        // Implementar a lógica para propagar atualizações preguiçosas, se necessário
-        if (lazy[node].m[0][0] == 1 && lazy[node].m[0][1] == 0 &&
-            lazy[node].m[1][0] == 0 && lazy[node].m[1][1] == 1) {
-            // Se a matriz preguiçosa for a identidade, não há operação a ser propagada
-            return;
-        }
-
-        if (start != end) {
-            // Propaga a matriz lazy[node] para os nós filhos
-            lazy[2 * node + 1] = merge(lazy[2 * node + 1], lazy[node]);
-            lazy[2 * node + 2] = merge(lazy[2 * node + 2], lazy[node]);
-        }
-
-        // Aplica a operação preguiçosa à matriz do nó atual
-        tree[node] = merge(tree[node], lazy[node]);
-
-        // Zera a operação preguiçosa do nó atual
-        lazy[node].m[0][0] = 1;
-        lazy[node].m[0][1] = 0;
-        lazy[node].m[1][0] = 0;
-        lazy[node].m[1][1] = 1;
+   void propagate(int node, int start, int end) {
+    if (lazy[node].m[0][0] == 1 && lazy[node].m[0][1] == 0 &&
+        lazy[node].m[1][0] == 0 && lazy[node].m[1][1] == 1) {
+        return;
     }
+
+    if (start != end) {
+        lazy[2 * node + 1] = merge(lazy[2 * node + 1], lazy[node]);
+        lazy[2 * node + 2] = merge(lazy[2 * node + 2], lazy[node]);
+    }
+
+    tree[node] = merge(tree[node], lazy[node]);
+
+    // Reset lazy node flag after applying updates
+    lazy[node].m[0][0] = 1;
+    lazy[node].m[0][1] = 0;
+    lazy[node].m[1][0] = 0;
+    lazy[node].m[1][1] = 1;
+
+    // Set flag indicating the node is not empty anymore
+    tree[node].isEmpty = false;
+}
+
 
 public:
     SegTree(int n) {
@@ -55,12 +55,10 @@ public:
     }
 
   void update(int node, int start, int end, int idx, Matrix matrix) {
-    // Se o intervalo representado pelo nó atual não contém o índice desejado, não faz nada
     if (idx < start || idx > end || start > end) {
         return;
     }
 
-    // Se o intervalo representado pelo nó atual é um único ponto, atualiza-o com a matriz fornecida
     if (start == end) {
         tree[node] = matrix;
         return;
@@ -70,46 +68,43 @@ public:
     int left_node = 2 * node + 1;
     int right_node = 2 * node + 2;
 
-    // Atualiza recursivamente os nós filhos conforme necessário
     update(left_node, start, mid, idx, matrix);
     update(right_node, mid + 1, end, idx, matrix);
 
-    // Atualiza o nó atual combinando as informações dos nós filhos
     tree[node] = merge(tree[left_node], tree[right_node]);
 }
-
-    Matrix query(int node, int start, int end, int query_start, int query_end) {
-        // Implementar a consulta do valor do nó na árvore de segmentação para um intervalo [query_start, query_end]
-        if (start > end || start > query_end || end < query_start) {
-            Matrix nullMatrix;
-            // Inicializar nullMatrix como uma matriz nula
-            nullMatrix.isEmpty = true; 
-            return nullMatrix;
-        }
-
-        if (lazy[node].isEmpty == false) {
-            propagate(node, start, end);
-        }
-
-        if (start >= query_start && end <= query_end) {
-            return tree[node];
-        }
-
-        int mid = (start + end) / 2;
-        int left_node = 2 * node + 1;
-        int right_node = 2 * node + 2;
-
-        Matrix left_result = query(left_node, start, mid, query_start, query_end);
-        Matrix right_result = query(right_node, mid + 1, end, query_start, query_end);
-
-        if (left_result.isEmpty) {
-            return right_result;
-        } else if (right_result.isEmpty) {
-            return left_result;
-        } else {
-            return merge(left_result, right_result);
-        }
+Matrix query(int node, int start, int end, int query_start, int query_end) {
+    if (start > end || start > query_end || end < query_start) {
+        Matrix nullMatrix;
+        nullMatrix.isEmpty = true;
+        return nullMatrix;
     }
+
+    if (lazy[node].m[0][0] != 1 || lazy[node].m[0][1] != 0 ||
+        lazy[node].m[1][0] != 0 || lazy[node].m[1][1] != 1) {
+        propagate(node, start, end);
+    }
+
+    if (start >= query_start && end <= query_end) {
+        return tree[node];
+    }
+
+    int mid = (start + end) / 2;
+    int left_node = 2 * node + 1;
+    int right_node = 2 * node + 2;
+
+    Matrix left_result = query(left_node, start, mid, query_start, query_end);
+    Matrix right_result = query(right_node, mid + 1, end, query_start, query_end);
+
+    if (left_result.isEmpty) {
+        return right_result;
+    } else if (right_result.isEmpty) {
+        return left_result;
+    } else {
+        return merge(left_result, right_result);
+    }
+}
+
  ~SegTree() {
         delete[] tree;
         delete[] lazy;
