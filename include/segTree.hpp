@@ -4,141 +4,34 @@
 
 using namespace std;
 
+//const int MAX_N = 100005; // Tamanho máximo da árvore de segmentação e dos pontos
+
 struct Matrix {
-    long long int m[2][2];
-    bool isEmpty; // Novo campo para verificar se a matriz está vazia ou não
-
-    Matrix() : isEmpty(true) {} // Construtor padrão inicializa a matriz como vazia
+    int mat[2][2]; // Matriz 2x2
 };
 
-class SegTree {
+class segTree {
 private:
-    Matrix *tree;
-    Matrix *lazy;
-
-    Matrix merge(Matrix matrix_a, Matrix matrix_b) {
-        // Implementar a multiplicação de matrizes 2x2 para aplicar as transformações
-        // Essa função deve retornar a matriz resultante da multiplicação
-        Matrix result;
-        // Implementação da multiplicação de matrizes
-        return result;
-    }
-
-    void propagate(int node, int start, int end) {
-        // Implementar a lógica para propagar atualizações preguiçosas, se necessário
-        if (lazy[node].m[0][0] == 1 && lazy[node].m[0][1] == 0 &&
-            lazy[node].m[1][0] == 0 && lazy[node].m[1][1] == 1) {
-            // Se a matriz preguiçosa for a identidade, não há operação a ser propagada
-            return;
-        }
-
-        if (start != end) {
-            // Propaga a matriz lazy[node] para os nós filhos
-            lazy[2 * node + 1] = merge(lazy[2 * node + 1], lazy[node]);
-            lazy[2 * node + 2] = merge(lazy[2 * node + 2], lazy[node]);
-        }
-
-        // Aplica a operação preguiçosa à matriz do nó atual
-        tree[node] = merge(tree[node], lazy[node]);
-
-        // Zera a operação preguiçosa do nó atual
-        lazy[node].m[0][0] = 1;
-        lazy[node].m[0][1] = 0;
-        lazy[node].m[1][0] = 0;
-        lazy[node].m[1][1] = 1;
-    }
-
+Matrix* Tree; // Árvore de segmentação
+Matrix* transforms; // Matrizes das transformações (alocação dinâmica)
+int maxNodes;
 public:
-    SegTree(int n) {
-        tree = new Matrix[4 * n];  // Usando arrays para representar a árvore de segmentação
-        lazy = new Matrix[4 * n];  // Array para operações preguiçosas
-    }
+segTree(int n);
 
-    void update(int node, int start, int end, int idx, Matrix matrix) {
-        // Implementar a atualização do valor do nó na árvore de segmentação
-        if (start == end && start == idx) {
-            tree[node] = matrix;
-            return;
-        }
+~segTree();
 
-        int mid = (start + end) / 2;
-        int left_node = 2 * node + 1;
-        int right_node = 2 * node + 2;
+// Função para multiplicar duas matrizes
+Matrix multiply(const Matrix &a, const Matrix &b);
 
-        if (idx <= mid) {
-            update(left_node, start, mid, idx, matrix);
-        } else {
-            update(right_node, mid + 1, end, idx, matrix);
-        }
+// Função para construir a árvore de segmentação
+void build(int node, int start, int end);
 
-        tree[node] = merge(tree[left_node], tree[right_node]);
-    }
+// Função para atualizar uma transformação
+void update(int node, int start, int end, int idx, const Matrix &newValue);
+    
 
-    Matrix query(int node, int start, int end, int query_start, int query_end) {
-        // Implementar a consulta do valor do nó na árvore de segmentação para um intervalo [query_start, query_end]
-        if (start > end || start > query_end || end < query_start) {
-            Matrix nullMatrix;
-            // Inicializar nullMatrix como uma matriz nula
-            nullMatrix.isEmpty = true; 
-            return nullMatrix;
-        }
+// Função para realizar uma consulta
+Matrix query(int node, int start, int end, int left, int right);
 
-        if (lazy[node].isEmpty == false) {
-            propagate(node, start, end);
-        }
-
-        if (start >= query_start && end <= query_end) {
-            return tree[node];
-        }
-
-        int mid = (start + end) / 2;
-        int left_node = 2 * node + 1;
-        int right_node = 2 * node + 2;
-
-        Matrix left_result = query(left_node, start, mid, query_start, query_end);
-        Matrix right_result = query(right_node, mid + 1, end, query_start, query_end);
-
-        if (left_result.isEmpty) {
-            return right_result;
-        } else if (right_result.isEmpty) {
-            return left_result;
-        } else {
-            return merge(left_result, right_result);
-        }
-    }
 };
-int main() {
-    int n, q;
-    cin >> n >> q;
-
-    SegTree segTree(n);
-
-    for (int i = 0; i < q; ++i) {
-        char operation;
-        cin >> operation;
-
-        if (operation == 'u') {
-            int idx;
-            Matrix newMatrix;
-            cin >> idx >> newMatrix.m[0][0] >> newMatrix.m[0][1] >> newMatrix.m[1][0] >> newMatrix.m[1][1];
-            newMatrix.isEmpty = false;
-            segTree.update(0, 0, n - 1, idx - 1, newMatrix); // -1 para adequar à indexação base 0
-        } else if (operation == 'q') {
-            int left, right;
-            cin >> left >> right;
-            Matrix result = segTree.query(0, 0, n - 1, left - 1, right - 1); // -1 para adequar à indexação base 0
-
-            if (result.isEmpty) {
-                cout << "Empty matrix" << endl;
-            } else {
-                // Imprima os valores da matriz resultante conforme necessário
-                cout << result.m[0][0] << " " << result.m[0][1] << endl;
-                cout << result.m[1][0] << " " << result.m[1][1] << endl;
-            }
-        }
-    }
-
-    return 0;
-}
-
 

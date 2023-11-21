@@ -13,27 +13,25 @@ SRC = src
 OBJ = obj
 INC = include
 BIN = bin
-OBJS = $(OBJ)/main.o $(OBJ)/grafo.o
-HDRS = $(INC)/grafo.hpp
+OBJS = $(OBJ)/main.o $(OBJ)/segTree.o
+HDRS = $(INC)/segTree.hpp
 CFLAGS = -Wall -c -g -I$(INC)
 
-EXE = $(BIN)/tp2.out
+EXE = $(BIN)/tp3.out
 
 run:  $(EXE)
 	 ./$(EXE)
 
 all:  $(EXE)
 
-
-	
-$(BIN)/tp2.out: $(OBJS)
-	$(CC) -g -o $(BIN)/tp2.out $(OBJS) $(LIBS)
+$(BIN)/tp3.out: $(OBJS)
+	$(CC) -g -o $(BIN)/tp3.out $(OBJS) $(LIBS)
 
 $(OBJ)/main.o: $(HDRS) $(SRC)/main.cpp
 	$(CC) $(CFLAGS) -o $(OBJ)/main.o $(SRC)/main.cpp
 
-$(OBJ)/grafo.o: $(HDRS) $(SRC)/grafo.cpp
-	$(CC) $(CFLAGS) -o $(OBJ)/grafo.o $(SRC)/grafo.cpp  
+$(OBJ)/segTree.o: $(HDRS) $(SRC)/segTree.cpp
+	$(CC) $(CFLAGS) -o $(OBJ)/segTree.o $(SRC)/segTree.cpp  
 
  
 	
