@@ -7,11 +7,12 @@ int main() {
     // Allocate memory for transforms
     Matrix* transforms = new Matrix[n];
 
+
     // Create an instance of segTree
     segTree tree(n);
     tree.build(1, 0, n - 1);
 
-    int x, y;
+    int x = 0, y = 0;
     // Process operations
     for (int i = 0; i < q; ++i) {
         char op;
@@ -35,9 +36,9 @@ int main() {
             point.mat[0][0] = x;
             point.mat[0][1] = 0;
             point.mat[1][0] = y;
-            point.mat[1][1] = 0;
+            point.mat[1][1] = 1;
             Matrix result = tree.multiply(res, point);
-            cout << result.mat[0][0] % 100000000 << " " << result.mat[1][0] % 100000000 << "\n";
+            cout << result.mat[0][0] % MOD << " " << result.mat[1][0] % MOD << "\n";
         }
     }
 

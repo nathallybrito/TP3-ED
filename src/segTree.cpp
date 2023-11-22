@@ -1,8 +1,17 @@
 #include "../include/segTree.hpp"
+
 segTree :: segTree(int n){
     maxNodes = 4 * n;
     Tree = new Matrix[maxNodes];
     transforms = new Matrix[n];
+     Matrix identity;
+    identity.mat[0][0] = identity.mat[1][1] = 1;
+    identity.mat[0][1] = identity.mat[1][0] = 0;
+
+    for (int i = 0; i < n; ++i) {
+    transforms[i] = identity;
+    }
+
 }
 segTree::~segTree(){
     delete[] Tree;
