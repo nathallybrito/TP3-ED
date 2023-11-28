@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/nathally/Estrutura-de-dados/TP3-ED",
-      "program": "/home/nathally/Estrutura-de-dados/TP3-ED/build/Debug/outDebug",
+      "cwd": "/home/nathally/Estrutura-de-dados/TP3-ED/src",
+      "program": "/home/nathally/Estrutura-de-dados/TP3-ED/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
